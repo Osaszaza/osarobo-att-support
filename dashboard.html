@@ -327,6 +327,9 @@ tbody tr:hover td{background:var(--surface2)}
 </div><!-- /.dash -->
 
 <script>
+// ── Config ───────────────────────────────────────────────────
+const API_BASE = 'https://osarobo-att-support.onrender.com';
+
 // ── State ────────────────────────────────────────────────────
 let currentPeriod = '24h';
 
@@ -614,7 +617,7 @@ async function generateSummary(){
   const btn=document.getElementById('genBtn');
   if(btn){btn.disabled=true;btn.textContent='Generating…';}
   try{
-    const r=await fetch(`/insights?period=${currentPeriod}`);
+    const r=await fetch(`${API_BASE}/insights?period=${currentPeriod}`);
     const d=await r.json();
     renderSummaries(d.summaries,(d.recent_conversations?.length??0)>0);
   }catch(e){if(btn){btn.disabled=false;btn.textContent='✦ Generate Summary Now';}}
@@ -627,9 +630,9 @@ async function loadAll(){
   setErr('');
   try{
     const [sRes,iRes,hRes]=await Promise.all([
-      fetch(`/stats?period=${currentPeriod}`),
-      fetch(`/insights?period=${currentPeriod}`),
-      fetch('/health-insights')
+      fetch(`${API_BASE}/stats?period=${currentPeriod}`),
+      fetch(`${API_BASE}/insights?period=${currentPeriod}`),
+      fetch(`${API_BASE}/health-insights`)
     ]);
     if(!sRes.ok||!iRes.ok||!hRes.ok) throw new Error('One or more endpoints returned an error.');
     const stats=await sRes.json();

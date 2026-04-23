@@ -780,6 +780,7 @@ kbd {
 </div>
 
 <script>
+const API_BASE   = 'https://osarobo-att-support.onrender.com';
 const SESSION_ID = crypto.randomUUID();
 
 let history      = [];
@@ -822,7 +823,7 @@ async function sendMessage() {
 
   } catch (err) {
     typingEl.remove();
-    showToast(err.message || 'Something went wrong. Is the server running?');
+    showToast(err.message || 'Something went wrong. Please try again.');
     history.pop();
   }
 
@@ -847,14 +848,24 @@ async function runAutoSummary() {
 }
 
 async function apiPost(path, body) {
-  const res = await fetch(path, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(body)
-  });
+  const url = API_BASE + path;
+  let res;
+  try {
+    res = await fetch(url, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(body)
+    });
+  } catch (networkErr) {
+    console.error('[API] Network error on', url, networkErr);
+    throw new Error('Cannot reach the support server. Please check your connection.');
+  }
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Server error (${res.status})`);
+  if (!res.ok) {
+    console.error('[API] Error response from', url, res.status, data);
+    throw new Error(data.error || `Server error (${res.status})`);
+  }
   return data;
 }
 
