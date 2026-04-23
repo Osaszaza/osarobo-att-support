@@ -209,6 +209,12 @@ tbody tr:hover td{background:var(--surface2)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)}}
 
+.logout-btn{margin-left:8px;padding:6px 16px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;color:#ff6b6b;cursor:pointer;transition:background .18s}
+.logout-btn:hover{background:rgba(255,107,107,.18)}
+.state-box-full{grid-column:1/-1}
+.health-panel--sentiment{margin-bottom:20px}
+.health-panel-title--warnings{margin-bottom:12px}
+
 @media(max-width:960px){
   .metrics-grid{grid-template-columns:repeat(3,1fr)}
   .two-col,.health-two-col{grid-template-columns:1fr}
@@ -236,13 +242,7 @@ tbody tr:hover td{background:var(--surface2)}
     <a class="nav-link" href="/">Chat</a>
     <a class="nav-link active" href="/dashboard.html">Dashboard</a>
   </div>
-  <button type="button" onclick="logout()" style="
-    margin-left:8px;padding:6px 16px;background:rgba(255,107,107,.08);
-    border:1px solid rgba(255,107,107,.3);border-radius:8px;
-    font-family:var(--font);font-size:13px;font-weight:600;
-    color:#ff6b6b;cursor:pointer;transition:all .18s;
-  " onmouseover="this.style.background='rgba(255,107,107,.18)'"
-     onmouseout="this.style.background='rgba(255,107,107,.08)'">Sign out</button>
+  <button type="button" class="logout-btn" onclick="logout()">Sign out</button>
 </nav>
 
 <div class="dash">
@@ -267,7 +267,7 @@ tbody tr:hover td{background:var(--surface2)}
   <!-- KPI METRICS -->
   <div class="section-label">Key Performance Indicators</div>
   <div class="metrics-grid" id="metricsGrid">
-    <div class="state-box" style="grid-column:1/-1"><div class="ld"><span></span><span></span><span></span></div></div>
+    <div class="state-box state-box-full"><div class="ld"><span></span><span></span><span></span></div></div>
   </div>
 
   <!-- INSIGHTS -->
@@ -301,7 +301,7 @@ tbody tr:hover td{background:var(--surface2)}
 
     <!-- Health KPIs -->
     <div class="health-kpi-grid" id="healthKpiGrid">
-      <div class="state-box" style="grid-column:1/-1"><div class="ld"><span></span><span></span><span></span></div></div>
+      <div class="state-box state-box-full"><div class="ld"><span></span><span></span><span></span></div></div>
     </div>
 
     <!-- Two-col: failing intents + suggestions -->
@@ -317,14 +317,14 @@ tbody tr:hover td{background:var(--surface2)}
     </div>
 
     <!-- Sentiment distribution -->
-    <div class="health-panel" style="margin-bottom:20px">
+    <div class="health-panel health-panel--sentiment">
       <div class="health-panel-title">😐 Sentiment Distribution</div>
       <div id="sentimentBar"><div class="state-box"><div class="ld"><span></span><span></span><span></span></div></div></div>
     </div>
 
     <!-- Warnings -->
     <div>
-      <div class="health-panel-title" style="margin-bottom:12px">🚨 System Warnings</div>
+      <div class="health-panel-title health-panel-title--warnings">🚨 System Warnings</div>
       <div class="warnings-list" id="warningsList">
         <div class="state-box"><div class="ld"><span></span><span></span><span></span></div></div>
       </div>
