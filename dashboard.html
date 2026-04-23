@@ -214,6 +214,7 @@ tbody tr:hover td{background:var(--surface2)}
 .state-box-full{grid-column:1/-1}
 .health-panel--sentiment{margin-bottom:20px}
 .health-panel-title--warnings{margin-bottom:12px}
+.demo-badge{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(251,146,60,.15);color:#fb923c;border:1px solid rgba(251,146,60,.35);border-radius:99px;padding:2px 8px;margin-left:8px;font-family:var(--mono);vertical-align:middle}
 
 @media(max-width:960px){
   .metrics-grid{grid-template-columns:repeat(3,1fr)}
@@ -334,14 +335,27 @@ tbody tr:hover td{background:var(--surface2)}
 </div><!-- /.dash -->
 
 <script>
-// ── Session guard ────────────────────────────────────────────
+// ── Demo / Auth ───────────────────────────────────────────────
+// Set DEMO_MODE = false to re-enable login requirement for production
+const DEMO_MODE = true;
+
 (function () {
-  if (!sessionStorage.getItem('support_user')) {
+  if (!DEMO_MODE && !sessionStorage.getItem('support_user')) {
     window.location.replace('login.html');
+  }
+  if (DEMO_MODE) {
+    const badge = document.createElement('span');
+    badge.className = 'demo-badge';
+    badge.textContent = 'Demo';
+    const brand = document.querySelector('.nav-brand-name');
+    if (brand) brand.appendChild(badge);
+    const logoutBtn = document.querySelector('.logout-btn');
+    if (logoutBtn) logoutBtn.hidden = true;
   }
 })();
 
 function logout() {
+  if (DEMO_MODE) return;
   sessionStorage.removeItem('support_user');
   window.location.replace('login.html');
 }
