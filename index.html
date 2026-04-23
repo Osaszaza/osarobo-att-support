@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Osarobo - AT&T App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #080b10;
+  --panel:     #0d1117;
+  --surface:   #131820;
+  --border:    #1e2535;
+  --border-hi: #2a3550;
+  --accent:    #00a8e0;
+  --accent2:   #00d68f;
+  --text:      #dce8f0;
+  --text-dim:  #5a7090;
+  --text-mid:  #8fa8c0;
+  --user-bg:   #0a1a2e;
+  --user-bdr:  #0f3060;
+  --ai-bg:     #0d1520;
+  --font:      'Syne', sans-serif;
+  --mono:      'JetBrains Mono', monospace;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOP NAV ─────────────────────────────────────── */
+.top-nav {
+  height: 54px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  text-decoration: none;
+}
+
+.nav-brand-icon {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--accent), #0070b8);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 0 12px rgba(0,168,224,0.3);
+}
+
+.nav-brand-text { line-height: 1.1; }
+
+.nav-brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.nav-brand-name span { color: var(--accent); }
+
+.nav-brand-tag {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+.nav-links { display: flex; gap: 4px; }
+
+.nav-link {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.nav-link:hover { color: var(--text); background: var(--surface); }
+
+.nav-link.active {
+  color: var(--accent);
+  background: rgba(0,168,224,0.1);
+  border: 1px solid rgba(0,168,224,0.2);
+}
+
+/* ── APP GRID ─────────────────────────────────────── */
+#app {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 260px 1fr;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ──────────────────────────────────────── */
+.sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.online-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-mid);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 99px;
+}
+
+.online-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent2);
+  animation: pulse 2.5s infinite;
+}
+
+.summaries-header {
+  padding: 16px 20px 10px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.summary-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 20px 20px;
+}
+
+.summary-feed::-webkit-scrollbar { width: 3px; }
+.summary-feed::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  animation: fadeUp 0.35s ease;
+}
+
+.summary-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.summary-chip {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  background: rgba(0,214,143,0.08);
+  border: 1px solid rgba(0,214,143,0.18);
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.summary-time {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  margin-left: auto;
+}
+
+.summary-body {
+  font-size: 11.5px;
+  color: var(--text-mid);
+  line-height: 1.65;
+}
+
+.no-summaries {
+  text-align: center;
+  padding: 30px 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.no-summaries .hint {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 11px;
+  margin-top: 6px;
+}
+
+/* ── CHAT PANEL ───────────────────────────────────── */
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  position: relative;
+}
+
+.chat-panel::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,168,224,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.chat-header {
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  background: rgba(8,11,16,0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #0e2040, #0a1830);
+  border: 1px solid var(--border-hi);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.chat-agent-name { font-size: 15px; font-weight: 600; }
+
+.chat-agent-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+/* ── MESSAGES ─────────────────────────────────────── */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+  scroll-behavior: smooth;
+}
+
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
+
+.welcome-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+.welcome-glyph {
+  font-size: 52px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 20px rgba(0,168,224,0.4));
+  animation: float 4s ease-in-out infinite;
+}
+
+.welcome-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--text), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-body {
+  font-size: 14px;
+  color: var(--text-dim);
+  max-width: 340px;
+  line-height: 1.75;
+  margin-bottom: 28px;
+}
+
+.starter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 460px;
+}
+
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: 99px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,168,224,0.06);
+}
+
+.msg-row {
+  display: flex;
+  gap: 12px;
+  animation: fadeUp 0.25s ease;
+}
+
+.msg-row.user {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+  max-width: 76%;
+}
+
+.msg-row.ai {
+  align-self: flex-start;
+  max-width: 76%;
+}
+
+.msg-av {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.msg-av.user-av { background: var(--user-bg); border: 1px solid var(--user-bdr); }
+.msg-av.ai-av   { background: linear-gradient(135deg,#0e2040,#0a1830); border: 1px solid var(--border-hi); }
+
+.msg-content { flex: 1; min-width: 0; }
+
+.bubble {
+  padding: 13px 17px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.msg-row.user .bubble {
+  background: var(--user-bg);
+  border: 1px solid var(--user-bdr);
+  color: #a8c8f0;
+  border-bottom-right-radius: 5px;
+}
+
+.msg-row.ai .bubble {
+  background: var(--ai-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 5px;
+}
+
+.msg-meta {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  margin-top: 5px;
+  padding: 0 4px;
+}
+
+.msg-row.user .msg-meta { text-align: right; }
+
+.typing-row { display: flex; gap: 12px; align-self: flex-start; animation: fadeUp 0.2s ease; }
+
+.typing-bubble {
+  background: var(--ai-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  border-bottom-left-radius: 5px;
+  padding: 15px 20px;
+  display: flex; gap: 5px; align-items: center;
+}
+
+.t-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  animation: tdot 1.3s infinite;
+}
+
+.t-dot:nth-child(2) { animation-delay: 0.18s; }
+.t-dot:nth-child(3) { animation-delay: 0.36s; }
+
+.summary-alert {
+  align-self: center;
+  background: rgba(0,214,143,0.05);
+  border: 1px solid rgba(0,214,143,0.2);
+  border-radius: 14px;
+  padding: 11px 20px;
+  max-width: 85%;
+  text-align: center;
+  animation: fadeUp 0.35s ease;
+}
+
+.summary-alert-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 5px;
+}
+
+.summary-alert-body { font-size: 12.5px; color: #6ee8a8; line-height: 1.6; }
+
+/* ── INPUT ────────────────────────────────────────── */
+.input-zone {
+  padding: 18px 28px 22px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  background: rgba(8,11,16,0.9);
+}
+
+.input-shell { display: flex; gap: 12px; align-items: flex-end; }
+
+.input-field-wrap {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.input-field-wrap:focus-within {
+  border-color: rgba(0,168,224,0.5);
+  box-shadow: 0 0 0 3px rgba(0,168,224,0.07);
+}
+
+#msgInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 14px 18px;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  resize: none;
+  min-height: 50px;
+  max-height: 130px;
+  display: block;
+}
+
+#msgInput::placeholder { color: var(--text-dim); }
+
+.send-button {
+  width: 50px; height: 50px;
+  background: linear-gradient(135deg, var(--accent), #0070b8);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 0 20px rgba(0,168,224,0.25);
+}
+
+.send-button:hover { opacity: 0.9; box-shadow: 0 0 28px rgba(0,168,224,0.4); }
+.send-button:active { transform: scale(0.94); }
+
+.send-button:disabled {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.input-hint {
+  margin-top: 9px;
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+kbd {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-mid);
+}
+
+/* ── FEEDBACK ROW ─────────────────────────────────── */
+.feedback-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 0 4px;
+}
+
+.fb-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+.fb-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.18s;
+  line-height: 1;
+  color: var(--text-dim);
+}
+
+.fb-btn:hover { border-color: var(--accent); background: rgba(0,168,224,0.08); }
+.fb-btn.voted { opacity: 0.35; cursor: default; pointer-events: none; }
+.fb-btn.voted-yes { border-color: var(--accent2); color: var(--accent2); opacity: 0.7; }
+.fb-btn.voted-no  { border-color: #f06060; color: #f06060; opacity: 0.7; }
+
+.fb-thanks {
+  font-size: 10px;
+  color: var(--accent2);
+  font-family: var(--mono);
+  animation: fadeUp 0.25s ease;
+}
+
+/* ── ESCALATION BANNER ────────────────────────────── */
+.escalation-banner {
+  align-self: stretch;
+  background: rgba(0,168,224,0.05);
+  border: 1px solid rgba(0,168,224,0.25);
+  border-left: 3px solid var(--accent);
+  border-radius: 14px;
+  padding: 16px 20px;
+  animation: fadeUp 0.35s ease;
+}
+
+.escalation-banner-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.escalation-banner-body {
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.escalation-banner-links {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.escalation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.escalation-link:hover {
+  border-color: var(--accent);
+  background: rgba(0,168,224,0.1);
+}
+
+/* ── TOAST ────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: #1a0808;
+  border: 1px solid #5a1818;
+  color: #f8a8a8;
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  z-index: 9999;
+  max-width: 380px;
+  animation: slideRight 0.3s ease;
+  line-height: 1.5;
+}
+
+/* ── ANIMATIONS ───────────────────────────────────── */
+@keyframes fadeUp  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes float   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes tdot    { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-5px);opacity:1} }
+@keyframes slideRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 680px) {
+  #app { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .messages { padding: 18px; }
+  .chat-header { padding: 12px 18px; }
+  .input-zone { padding: 12px 18px 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a class="nav-brand" href="/">
+    <div class="nav-brand-icon">🌐</div>
+    <div class="nav-brand-text">
+      <div class="nav-brand-name">Osarobo <span>AT&T</span></div>
+      <div class="nav-brand-tag">Customer Support · AI Powered</div>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link active" href="/">Chat</a>
+    <a class="nav-link" href="/dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="online-pill">
+        <div class="online-dot"></div>
+        Agent Online
+      </div>
+    </div>
+
+    <div class="summaries-header">
+      <div class="section-title">Session Summaries</div>
+    </div>
+
+    <div class="summary-feed" id="summaryFeed">
+      <div class="no-summaries">
+        No summaries yet
+        <div class="hint">Auto-generated every 5 messages</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-avatar">🤖</div>
+        <div>
+          <div class="chat-agent-name">Osarobo — AT&T App</div>
+          <div class="chat-agent-sub">GPT-4o-mini · Customer Care AI</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="welcome-state" id="welcomeState">
+        <div class="welcome-glyph">💬</div>
+        <div class="welcome-title">How can I help you today?</div>
+        <p class="welcome-body">
+          Hi, I'm Osarobo — your AT&T support assistant.
+          Ask me anything about your account, plans, or technical issues.
+        </p>
+        <div class="starter-chips">
+          <div class="chip" onclick="useChip(this)">Reset my password</div>
+          <div class="chip" onclick="useChip(this)">Check my data usage</div>
+          <div class="chip" onclick="useChip(this)">Upgrade my plan</div>
+          <div class="chip" onclick="useChip(this)">Report a network issue</div>
+          <div class="chip" onclick="useChip(this)">Cancel a service</div>
+          <div class="chip" onclick="useChip(this)">Billing question</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-zone">
+      <div class="input-shell">
+        <div class="input-field-wrap">
+          <textarea id="msgInput" placeholder="Type your message to Osarobo..." rows="1"></textarea>
+        </div>
+        <button class="send-button" id="sendBtn" type="button" title="Send message" onclick="sendMessage()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">
+        <kbd>Enter</kbd> to send &nbsp;·&nbsp; <kbd>Shift+Enter</kbd> for new line
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SESSION_ID = crypto.randomUUID();
+
+let history      = [];
+let msgCount     = 0;
+let summaryCount = 0;
+let busy         = false;
+
+const messages    = document.getElementById('messages');
+const msgInput    = document.getElementById('msgInput');
+const sendBtn     = document.getElementById('sendBtn');
+const summaryFeed = document.getElementById('summaryFeed');
+
+async function sendMessage() {
+  const text = msgInput.value.trim();
+  if (!text || busy) return;
+
+  const ws = document.getElementById('welcomeState');
+  if (ws) ws.remove();
+
+  appendBubble('user', text);
+  history.push({ role: 'user', content: text });
+
+  msgInput.value = '';
+  autoResize();
+  setLoading(true);
+
+  const typingEl = showTyping();
+
+  try {
+    const data = await apiPost('/chat', { message: text, history, session_id: SESSION_ID, msg_count: msgCount });
+
+    typingEl.remove();
+    appendBubble('ai', data.response, data.conversation_id);
+    history.push({ role: 'assistant', content: data.response });
+
+    msgCount++;
+
+    if (data.is_escalation) showEscalationNotice();
+    if (msgCount % 5 === 0) await runAutoSummary();
+
+  } catch (err) {
+    typingEl.remove();
+    showToast(err.message || 'Something went wrong. Is the server running?');
+    history.pop();
+  }
+
+  setLoading(false);
+}
+
+async function runAutoSummary() {
+  try {
+    const transcript = history
+      .slice(-10)
+      .map(m => `${m.role === 'user' ? 'Customer' : 'Agent'}: ${m.content}`)
+      .join('\n');
+
+    const data = await apiPost('/summarize', { transcript });
+
+    appendSummaryAlert(data.summary);
+    addSummaryCard(data.summary);
+    summaryCount++;
+  } catch (e) {
+    console.error('Summary failed:', e);
+  }
+}
+
+async function apiPost(path, body) {
+  const res = await fetch(path, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Server error (${res.status})`);
+  return data;
+}
+
+function appendBubble(role, text, convId = null) {
+  const isUser = role === 'user';
+  const time   = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const el     = document.createElement('div');
+  el.className = `msg-row ${isUser ? 'user' : 'ai'}`;
+
+  const feedbackRow = (!isUser && convId) ? `
+    <div class="feedback-row">
+      <span class="fb-label">Helpful?</span>
+      <button class="fb-btn" type="button" onclick="sendFeedback('${convId}', true, this)">👍</button>
+      <button class="fb-btn" type="button" onclick="sendFeedback('${convId}', false, this)">👎</button>
+    </div>` : '';
+
+  el.innerHTML = `
+    <div class="msg-av ${isUser ? 'user-av' : 'ai-av'}">${isUser ? '👤' : '🤖'}</div>
+    <div class="msg-content">
+      <div class="bubble">${escHtml(text)}</div>
+      <div class="msg-meta">${isUser ? 'You' : 'Osarobo'} · ${time}</div>
+      ${feedbackRow}
+    </div>`;
+  messages.appendChild(el);
+  scrollBottom();
+}
+
+async function sendFeedback(convId, isHelpful, btn) {
+  const row   = btn.closest('.feedback-row');
+  const btns  = row.querySelectorAll('.fb-btn');
+  btns.forEach(b => b.classList.add('voted'));
+  btn.classList.add(isHelpful ? 'voted-yes' : 'voted-no');
+
+  const thanks = document.createElement('span');
+  thanks.className = 'fb-thanks';
+  thanks.textContent = 'Thank you for your feedback';
+  row.appendChild(thanks);
+
+  try {
+    await apiPost('/feedback', { session_id: SESSION_ID, conversation_id: convId, was_helpful: isHelpful });
+  } catch (e) {
+    console.error('Feedback failed:', e);
+  }
+}
+
+function showEscalationNotice() {
+  const el = document.createElement('div');
+  el.className = 'escalation-banner';
+  el.innerHTML = `
+    <div class="escalation-banner-title">📞 Connect with a Live Agent</div>
+    <div class="escalation-banner-body">
+      It looks like you'd like to speak with someone directly. Our AT&T support team is here to help.
+    </div>
+    <div class="escalation-banner-links">
+      <a class="escalation-link" href="tel:18002882020">📱 Call 1-800-288-2020</a>
+      <a class="escalation-link" href="https://www.att.com/support/" target="_blank" rel="noopener">💬 Live Chat</a>
+    </div>`;
+  messages.appendChild(el);
+  scrollBottom();
+}
+
+function showTyping() {
+  const el = document.createElement('div');
+  el.className = 'typing-row';
+  el.innerHTML = `
+    <div class="msg-av ai-av">🤖</div>
+    <div class="typing-bubble">
+      <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+    </div>`;
+  messages.appendChild(el);
+  scrollBottom();
+  return el;
+}
+
+function appendSummaryAlert(text) {
+  const el = document.createElement('div');
+  el.className = 'summary-alert';
+  el.innerHTML = `
+    <div class="summary-alert-title">✦ Session Summary</div>
+    <div class="summary-alert-body">${escHtml(text)}</div>`;
+  messages.appendChild(el);
+  scrollBottom();
+}
+
+function addSummaryCard(text) {
+  const empty = summaryFeed.querySelector('.no-summaries');
+  if (empty) empty.remove();
+
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const el   = document.createElement('div');
+  el.className = 'summary-card';
+  el.innerHTML = `
+    <div class="summary-card-head">
+      <span class="summary-chip">Summary #${summaryCount + 1}</span>
+      <span class="summary-time">${time}</span>
+    </div>
+    <div class="summary-body">${escHtml(text)}</div>`;
+  summaryFeed.prepend(el);
+}
+
+function setLoading(state) {
+  busy = state;
+  sendBtn.disabled  = state;
+  msgInput.disabled = state;
+}
+
+function scrollBottom() { messages.scrollTop = messages.scrollHeight; }
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function autoResize() {
+  msgInput.style.height = 'auto';
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 130) + 'px';
+}
+
+function showToast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 6000);
+}
+
+function useChip(el) {
+  msgInput.value = el.textContent;
+  msgInput.focus();
+  sendMessage();
+}
+
+msgInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+msgInput.addEventListener('input', autoResize);
+</script>
+</body>
+</html>
